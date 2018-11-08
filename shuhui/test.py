@@ -13,23 +13,37 @@ isbreak = False
 def home():
     url_02 = "https://prod-api.ishuhui.com/ver/ea149533/setting/page?page=/&.json"
     ir = requests.get(url_02)
+    shuhui_load_dict = getdown_id()
+    load_id_list = []
     book_json = json.loads(ir.content)
 
     # 喵的 改版版结构比原来更加优秀了，这1,2,3，啊什么鬼啊 book_json['data'][1]["data"][1]["data"][1]["viewData"]
-    for key in book_json['data'][1]["data"][1]["data"][1]["viewData"]:
+    manhua_data_list = book_json['data'][1]["data"][1]["data"][1]["viewData"]
+    for key in reversed(manhua_data_list) :
+        if isbreak:
+            break
         # 章节id 漫画名称 最新章节数 章节名称
         chapater_id =  key['id']
         chapater_book =  key['title']
         chapater_number =  key['minorTitle']
         chapater_title = key['desc']
 
+        if shuhui_load_dict.has_key(str(chapater_id)):
+            continue
+
         url_04 = " https://prod-api.ishuhui.com/comics/detail?id=%s"%chapater_id
         ir = requests.get(url_04)
         decodejson = json.loads(ir.content)
         #这里分两种写法 自己服务器上能用多线程 新浪云上没试验过
-        if isbreak:
-            break
         load_picture(decodejson["data"]["contentImg"],chapater_book,chapater_title)
+        load_id_list.append(chapater_id)
+    manhua_data_dict = {}
+    for key in  manhua_data_list:
+        manhua_data_dict[key['id']] = [key['title'],key['desc']]
+    writedown_id(shuhui_load_dict,manhua_data_dict,load_id_list)
+
+
+
 
 def load_picture(url_lists,book_text,title):
     global global_data
@@ -105,4 +119,37 @@ class ProgressBar:
             sys.stdout.write('\n')
         sys.stdout.flush()
 
+def getdown_id():
+    path_file = "download_id_list.txt"
+    download_id_list = {}
+    if os.path.exists(path_file):
+        file = open(path_file,'r')
+        for line in file.readlines():
+            # 读取文档内容，循环存入漫画id
+            download_id_list[line.strip().split('\t')[0]] = [line.strip().split('\t')[1],line.strip().split('\t')[2]]
+    else:
+        file = open(path_file,'w')
+        file.close()
+
+    return download_id_list
+
+def writedown_id(shuhui_load_dict,manhua_data_dict,load_id_list):
+    for key in list(shuhui_load_dict.keys()):
+        if manhua_data_dict.has_key(int(key)):
+            continue
+        else:
+            del shuhui_load_dict[key]
+
+    for key in load_id_list:
+        shuhui_load_dict[key] = manhua_data_dict[key]
+
+    with open("download_id_list.txt",'w') as file:
+        file.writelines(dict_to_text(shuhui_load_dict))
+
+def dict_to_text(data_dict):
+    outstr = ""
+    for key in data_dict:
+        outstr = outstr + str(key) + '\t' + str(data_dict[key][0]) + '\t' + str(data_dict[key][1]) + '\n'
+
+    return outstr
 home()
