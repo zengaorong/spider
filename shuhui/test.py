@@ -4,8 +4,6 @@ import time
 import os
 import json
 import requests
-import math
-from sys import getsizeof
 reload(sys)
 sys.setdefaultencoding('utf-8')
 global_data = 0
@@ -53,27 +51,23 @@ def load_picture(url_lists,book_text,title):
     load_book_text = book_text
     load_title = title
     #这里在新浪云要变换下
-    serchfile = load_book_text + "\\" + load_title
+    serchfile = load_book_text + "/" + load_title
     num = 0
     print "now loading:" + serchfile
     mkdir(load_book_text)
-    mkdir(load_book_text + "\\" + load_title)
+    mkdir(load_book_text + "/" + load_title)
 
     time_over = time.strftime('%y-%m',time.localtime(time.time()))
     mkdir(time_over)
-    mkdir(time_over + "\\" + serchfile)
-    monthfile = time_over + "\\" + serchfile
+    mkdir(time_over + "/" + serchfile)
+    monthfile = time_over + "/" + serchfile
     bar = ProgressBar(total = len(picture_dict))
     for key in picture_dict:
-        #wait_url(time.time())
-        #load_url = "http://pic01.ishuhui.com" + picture_dict[key].replace('/upload',"")
         load_url = key["url"]
-        #print load_url
         ir = requests.get(load_url,timeout=10)
         global_data = global_data + int(sys.getsizeof(ir.content))
-        sz = open(r'%s\%s.jpg'%(serchfile,key["name"]) , 'wb').write(ir.content)
-        kz = open(r'%s\%s.jpg'%(monthfile,key["name"]) , 'wb').write(ir.content)
-        #print num
+        sz = open(r'%s/%s.jpg'%(serchfile,key["name"]) , 'wb').write(ir.content)
+        kz = open(r'%s/%s.jpg'%(monthfile,key["name"]) , 'wb').write(ir.content)
         num = num + 1
         bar.move()
         bar.log()
