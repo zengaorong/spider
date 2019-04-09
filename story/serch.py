@@ -29,7 +29,8 @@ div_list = soup.find_all("div",{'class','bookbox'})
 #print div_list
 
 # 小说库 小说id 小说url 最近章节url 章节名称 最新章节url 名称 作者 简介
-#story_url,story_name,story_chapter_url,story_chapter_name,story_intro,author
+# 对于数据库 添加章节字段 但是不是在该处 而是执行更新的时候
+#story_id story_url,story_name,story_chapter_url,story_chapter_name,story_intro,author
 
 story_list = []
 for cell in div_list:

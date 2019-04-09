@@ -15,33 +15,35 @@ head = {
 }
 
 #https://www.yangguiweihuo.com/11/11516/23008885.html
-url = "https://www.yangguiweihuo.com/11/11516/23008885.html"
-url = "https://www.biquke.com/bq/3/3714/2739693.html"
-url = "http://www.biquge.lu/s.php?ie=gbk&s=15244670192641769733&q=1"
-respons = requests.get(url,headers=head,timeout=30)
-with open("result.html","w") as f:
-    f.writelines(respons.text.replace('\r','\n'))
+# url = "https://www.yangguiweihuo.com/11/11516/23008885.html"
+# url = "https://www.biquke.com/bq/3/3714/2739693.html"
+# url = "http://www.biquge.lu/s.php?ie=gbk&s=15244670192641769733&q=1"
 
+def story_spider_for_biequge(url):
+    respons = requests.get(url,headers=head,timeout=30)
+    with open("result.html","w") as f:
+        f.writelines(respons.text.replace('\r','\n'))
 
-soup = BeautifulSoup(open("result.html"),"html.parser")
-div_list = soup.find("div" ,id="content")
-#print div_list
-datas = '''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-%s
-</body>
-</html>
-'''%div_list
+    soup = BeautifulSoup(open("result.html"),"html.parser")
+    div_list = soup.find("div" ,id="content")
+    print div_list
+    #print div_list
+    datas = '''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+    %s
+    </body>
+    </html>
+    '''%div_list
 
-now = datetime.now()
-with open("%s.html"%now.strftime('%Y-%m-%d-%H-%M-%S'),'w') as f:
-    f.writelines(datas)
+    now = datetime.now()
+    with open("%s.html"%now.strftime('%Y-%m-%d-%H-%M-%S'),'w') as f:
+        f.writelines(datas)
 
 
 
